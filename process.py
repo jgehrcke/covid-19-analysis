@@ -31,6 +31,7 @@ import re
 import time
 from datetime import datetime
 from textwrap import dedent
+from difflib import SequenceMatcher
 
 import numpy as np
 import pandas as pd
@@ -235,13 +236,14 @@ def jhu_csse_csv_to_dataframe(data_file_path, location_name):
     log.info("process data file")
     # Merge location names into somewhat more managable identifiers.
     countries = [
-        c.lower() if c != "nan" else ""
+        "_".join(c.lower().split()) if c != "nan" else ""
         for c in list(df["Country/Region"].astype("str"))
     ]
     provinces = [
-        p.lower() if p != "nan" else ""
+        "_".join(p.lower().split()) if p != "nan" else ""
         for p in list(df["Province/State"].astype("str"))
     ]
+
     df["where"] = [f"{c}_{p}" if p else c for c, p in zip(countries, provinces)]
 
     # Make each column represent a location, and each row represent a day
@@ -268,10 +270,30 @@ def jhu_csse_csv_to_dataframe(data_file_path, location_name):
     loc = location_name.lower()
     if loc not in df:
         log.error("location string `%s` not found in data set", loc)
+        find_similar_locations(df, loc)
         sys.exit(1)
 
     # Ignore early data in subsequent processing.
     return df[loc].to_frame()["2020-02-28":]
+
+
+def find_similar_locations(df, query):
+    valid_locs = list(df.columns.values)
+
+    for vl in valid_locs:
+        if vl.startswith(query) or vl.endswith(query):
+            log.info("candidate by suffix/prefix: %s", vl)
+
+    # lds = {vl: jellyfish.levenshtein_distance(vl, query) for vl in valid_locs}
+    # lds_sorted = {loc: ld for loc, ld in sorted(lds.items(), key=lambda item: item[1])}
+    lds = {vl: SequenceMatcher(None, vl, query).ratio() for vl in valid_locs}
+    lds_sorted = {
+        loc: ld
+        for loc, ld in sorted(lds.items(), key=lambda item: item[1], reverse=True)
+    }
+
+    for loc, ld in list(lds_sorted.items())[:6]:
+        log.info("candidate by similarity: %s (similarity %.2f)", loc, ld)
 
 
 def germany_try_to_get_todays_value_from_zeit_de(df):
