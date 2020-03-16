@@ -33,6 +33,20 @@ this the official numbers from German authorities lack behind, and zeit.de
 seems to do a decent job at getting current numbers from individual federal
 ministries).
 
+For a list of valid location names just do some trial and error. There should
+be some helpful suggestion:
+
+```
+$ make plot-charleston
+python process.py  _current.csv charleston
+200316-19:02:40.440 INFO: parse data file
+200316-19:02:40.448 INFO: process data file
+200316-19:02:40.455 ERROR: location string `charleston` not found in data set
+200316-19:02:40.473 INFO: candidate by similarity: us_charlton_ga (similarity 0.67)
+200316-19:02:40.473 INFO: candidate by similarity: us_charleston_county_sc (similarity 0.61)
+...
+```
+
 ### Example screenshot
 
 The HTML document contains plots generated with
