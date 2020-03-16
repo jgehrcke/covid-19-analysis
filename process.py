@@ -121,6 +121,7 @@ def create_bokeh_html(df, location_name, preamble_text):
         marker="x",
         size=8,
         line_width=3,
+        legend_label="raw data",
         source=ColumnDataSource(data=cases_total),
     )
     f1.y_range.start = 1
@@ -131,8 +132,15 @@ def create_bokeh_html(df, location_name, preamble_text):
     f1.outline_line_width = 4
     f1.outline_line_alpha = 0.3
     f1.outline_line_color = "#aec6cf"
+    f1.line(
+        "date",
+        "expfit",
+        legend_label="exponential fit",
+        source=ColumnDataSource(data=cases_total_fit),
+    )
 
-    f1.line("date", "expfit", source=ColumnDataSource(data=cases_total_fit))
+    f1.legend.title = "Legend"
+    f1.legend.location = "top_left"
 
     f2 = figure(
         title="evolution of newly confirmed cases per day",
@@ -141,7 +149,6 @@ def create_bokeh_html(df, location_name, preamble_text):
         toolbar_location=None,
         background_fill_color="#F2F2F7",
     )
-
     f2.scatter(
         "date",
         "diff",
@@ -150,6 +157,7 @@ def create_bokeh_html(df, location_name, preamble_text):
         line_width=3,
         source=ColumnDataSource(data=cases_new),
     )
+
     f2.y_range.start = 1
     f2.y_range.end = cases_new["diff"].max() * 10
     f2.xaxis.axis_label = "Date"
