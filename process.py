@@ -55,7 +55,10 @@ def main():
     location_name = sys.argv[2]
 
     df = jhu_csse_csv_to_dataframe(data_file_path, location_name)
-    df, modified = germany_try_to_get_todays_value_from_zeit_de(df)
+
+    modified = False
+    if location_name.lower() == "germany":
+        df, modified = germany_try_to_get_todays_value_from_zeit_de(df)
 
     now = datetime.utcnow()
     zeit_de_source = 'and <a href="https://zeit.de">zeit.de</a>' if modified else ""
