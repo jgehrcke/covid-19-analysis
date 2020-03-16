@@ -11,25 +11,27 @@ Prerequisite is a Python 3.6 environment with dependencies installed (`pip insta
 
 ### Usage
 
-2. Fetch raw data (can also be used to subsequently update the data):
+1. Fetch raw data (can also be used to subsequently update the data):
 
    ```
    $ make fetch-data
    ```
 
-3. Generate plots for a specific location, for example:
+2. Generate time evolution plots for a specific country or region, for example:
 
    ```
    $ make plot-germany
    ```
 
-This will generate `plot-germany.html` and try to automatically open it.
-`make plot-italy` etc work correspondingly.
+This generates `plot-germany.html`, and tries to automatically open it.
 
-**Note**: `make plot-germany` attempts to fetch today's current confirmed infection count
-from [zeit.de](https://www.zeit.de/) (at the time of writing this the official
-numbers from German authorities lack behind, and zeit.de seems to do a decent
-job at getting current numbers from individual federal ministries.)
+`make plot-italy`, `make plot-spain`, ... work correspondingly.
+
+**Note**: `make plot-germany` attempts to fetch the current confirmed infection
+count for Germany from [zeit.de](https://www.zeit.de/) (at the time of writing
+this the official numbers from German authorities lack behind, and zeit.de
+seems to do a decent job at getting current numbers from individual federal
+ministries).
 
 ### Example screenshot
 
