@@ -7,11 +7,11 @@ repository.
 This pipeline looks at the _confirmed infection count_, as it evolves over time
 for individual countries.
 
+Prerequisite is a Python 3.6 environment with dependencies installed (`pip install -r requirements.txt`).
+
 ### Usage
 
-1. Set up a Python environment with dependencies.
-
-2. Fetch or update raw data:
+2. Fetch raw data (can also be used to subsequently update the data):
 
    ```
    $ make fetch-data
