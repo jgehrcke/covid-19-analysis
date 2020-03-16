@@ -244,6 +244,9 @@ def jhu_csse_csv_to_dataframe(data_file_path, location_name):
         for p in list(df["Province/State"].astype("str"))
     ]
 
+    countries = [c.replace(",", "").replace(".", "") for c in countries]
+    provinces = [p.replace(",", "").replace(".", "") for p in provinces]
+
     df["where"] = [f"{c}_{p}" if p else c for c, p in zip(countries, provinces)]
 
     # Make each column represent a location, and each row represent a day
