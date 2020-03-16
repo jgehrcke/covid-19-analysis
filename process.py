@@ -27,10 +27,15 @@ This program is part of https://github.com/jgehrcke/covid-19-analysis
 """
 import logging
 import sys
+import re
+import time
+from datetime import datetime
 from textwrap import dedent
 
 import numpy as np
 import pandas as pd
+import requests
+
 from bokeh.plotting import figure, output_file, show
 from bokeh.layouts import column
 from bokeh.models import ColumnDataSource, Div
@@ -47,9 +52,10 @@ logging.basicConfig(
 def main():
     data_file_path = sys.argv[1]
     location_name = sys.argv[2]
-    create_bokeh_html(
-        jhu_csse_csv_to_dataframe(data_file_path, location_name), location_name
-    )
+
+    df = jhu_csse_csv_to_dataframe(data_file_path, location_name)
+    df = germany_try_to_get_todays_value_from_zeit_de(df)
+    create_bokeh_html(df, location_name)
 
 
 def create_bokeh_html(df, location_name):
@@ -102,7 +108,7 @@ def create_bokeh_html(df, location_name):
         toolbar_location=None,
     )
     f1.scatter(
-        "Date",
+        "date",
         loc,
         marker="x",
         size=8,
@@ -125,7 +131,7 @@ def create_bokeh_html(df, location_name):
     )
 
     f2.scatter(
-        "Date",
+        "date",
         "diff",
         marker="x",
         size=8,
@@ -180,7 +186,7 @@ def jhu_csse_csv_to_dataframe(data_file_path, location_name):
     df.index = normalized_date_strings
     df.index = pd.to_datetime(df.index, format="%m/%d/%y")
 
-    df.index.name = "Date"
+    df.index.name = "date"
     # df.sort_index(inplace=True)
 
     # Only return series for specific location
@@ -192,6 +198,45 @@ def jhu_csse_csv_to_dataframe(data_file_path, location_name):
 
     # Ignore early data in subsequent processing.
     return df[loc].to_frame()["2020-02-28":]
+
+
+def germany_try_to_get_todays_value_from_zeit_de(df):
+    url = f"https://interactive.zeit.de/cronjobs/2020/corona/data.json?time={int(time.time())}"
+    log.info("try to get current case count from zeit.de")
+
+    today = datetime.utcnow().strftime("%Y-%m-%d")
+
+    data = None
+    try:
+        resp = requests.get(url, timeout=(3.05, 10))
+        resp.raise_for_status()
+        data = resp.json()
+
+    except Exception as exc:
+        log.warning("bail out: %s", str(exc))
+        return df
+
+    pd_today = pd.to_datetime(today, format="%Y-%m-%d")
+
+    if pd_today not in df["germany"]:
+        log.info("no sample for today in the original data set")
+
+    zeit_count_today = None
+    if data:
+        # log.info(json.dumps(data, indent=2))
+        if "chronology" in data:
+            for sample in data["chronology"]:
+                if "date" in sample:
+                    if sample["date"] == today:
+                        log.info("sample from zeit.de for today: %s", sample["count"])
+                        zeit_count_today = sample["count"]
+
+    if zeit_count_today:
+        log.info("use that data point")
+        df = df.append(pd.DataFrame({"germany": [sample["count"]]}, index=[pd_today]))
+        df.index.name = "date"
+
+    return df
 
 
 if __name__ == "__main__":
