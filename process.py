@@ -59,7 +59,7 @@ def main():
     zeit_de_source = 'and <a href="https://zeit.de">zeit.de</a>' if modified else ""
 
     preamble_text = f"""
-    Analysis based on confirmed COVID-19 cases for {location_name}.
+    Analysis based on confirmed COVID-19 cases for {location_name.upper()}.
 
     Data source: <a href="https://github.com/CSSEGISandData/COVID-19">github.com/CSSEGISandData/COVID-19</a> {zeit_de_source}
 
@@ -106,6 +106,7 @@ def create_bokeh_html(df, location_name, preamble_text):
         x_axis_type="datetime",
         y_axis_type="log",
         toolbar_location=None,
+        background_fill_color="#F2F2F7",
     )
     f1.scatter(
         "date",
@@ -121,11 +122,16 @@ def create_bokeh_html(df, location_name, preamble_text):
     f1.yaxis.axis_label = "number of confirmed cases"
     f1.xaxis.ticker.desired_num_ticks = 15
 
+    f1.outline_line_width = 4
+    f1.outline_line_alpha = 0.3
+    f1.outline_line_color = "#aec6cf"
+
     f2 = figure(
         title="evolution of newly confirmed cases per day",
         x_axis_type="datetime",
         y_axis_type="log",
         toolbar_location=None,
+        background_fill_color="#F2F2F7",
     )
 
     f2.scatter(
@@ -141,6 +147,10 @@ def create_bokeh_html(df, location_name, preamble_text):
     f2.xaxis.axis_label = "Date"
     f2.yaxis.axis_label = "newly registered cases, per day"
     f2.xaxis.ticker.desired_num_ticks = 15
+
+    f2.outline_line_width = 4
+    f2.outline_line_alpha = 0.3
+    f2.outline_line_color = "#aec6cf"
 
     show(
         column(preamble, f1, f2, sizing_mode="stretch_both"), browser="firefox",
