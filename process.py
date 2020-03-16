@@ -57,6 +57,7 @@ def main():
     df = jhu_csse_csv_to_dataframe(data_file_path, location_name)
     df, modified = germany_try_to_get_todays_value_from_zeit_de(df)
 
+    now = datetime.utcnow()
     zeit_de_source = 'and <a href="https://zeit.de">zeit.de</a>' if modified else ""
 
     preamble_text = f"""
@@ -66,9 +67,11 @@ def main():
 
     Author: <a href="https://gehrcke.de">Dr. Jan-Philip Gehrcke</a>
 
-    Code: <a href="https://github.com/jgehrcke/covid-19-analysis">github.com/jgehrcke/covid19</a>
+    Code: <a href="https://github.com/jgehrcke/covid-19-analysis">github.com/jgehrcke/covid-19-analysis</a>
 
     Data points from before February 28 are ignored.
+
+    Generated at {now .strftime('%Y-%m-%d %H:%M UTC')}
     """
 
     preamble_text = dedent(preamble_text.replace("\n\n", "<br />"))
@@ -139,7 +142,7 @@ def create_bokeh_html(df, location_name, preamble_text):
         source=ColumnDataSource(data=cases_total_fit),
     )
 
-    f1.legend.title = "Legend"
+    # f1.legend.title = "Legend"
     f1.legend.location = "top_left"
 
     f2 = figure(
