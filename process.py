@@ -34,6 +34,7 @@ from textwrap import dedent
 
 import numpy as np
 import pandas as pd
+import scipy.optimize
 import requests
 
 from bokeh.plotting import figure, output_file, show
@@ -96,6 +97,12 @@ def create_bokeh_html(df, location_name, preamble_text):
     # that day. Set to NaN.
     cases_new["diff"].replace(0, np.NaN)
 
+    cases_total_fit = expfit(cases_total, loc)
+
+    # cases_new_fit['expfit'] =
+
+    # sys.exit()
+
     # ticker = DatetimeTickFormatter(interval=5, num_minor_ticks=10)
     # xaxis = DatetimeAxis(ticker=ticker)
 
@@ -121,10 +128,11 @@ def create_bokeh_html(df, location_name, preamble_text):
     f1.xaxis.axis_label = "Date"
     f1.yaxis.axis_label = "number of confirmed cases"
     f1.xaxis.ticker.desired_num_ticks = 15
-
     f1.outline_line_width = 4
     f1.outline_line_alpha = 0.3
     f1.outline_line_color = "#aec6cf"
+
+    f1.line("date", "expfit", source=ColumnDataSource(data=cases_total_fit))
 
     f2 = figure(
         title="evolution of newly confirmed cases per day",
@@ -155,6 +163,48 @@ def create_bokeh_html(df, location_name, preamble_text):
     show(
         column(preamble, f1, f2, sizing_mode="stretch_both"), browser="firefox",
     )
+
+
+def expfit(df, loc):
+
+    # Parameterize a simple linear function.
+    def linfunc(x, a, b):
+        return a + x * b
+
+    # Get date-representing x values as numpy array containing float data type.
+    x = np.array(df.index.to_pydatetime(), dtype=np.datetime64).astype("float")
+
+    minx = x.min()
+
+    # For the fit don't deal with crazy large x values, transform to time
+    # deltas (by substracting mininum), and also transform from nanoseconds
+    # seconds.
+    fitx = (x - minx) / 10 ** 9
+
+    # Get natural logarithm of data values
+    y = np.log(df[loc].to_numpy())
+    # log.info(fitx)
+    # log.info(y)
+    # log.info(", ".join("{%s, %s}" % (x, y) for x, y in zip(fitx, y)))
+
+    # Choose starting parameters for iterative fit.
+    p0 = [minx, 3]
+
+    popt, pcov = scipy.optimize.curve_fit(linfunc, fitx, y, p0=p0)
+    log.info("fit paramters: %s, %s", popt, pcov)
+
+    # Get data values from fit for the time values corresponding to the time
+    # values in the original time series used for fitting.
+    fit_ys_log = linfunc(fitx, *popt)
+
+    # Generate corresponding fit values by inverting logarithm.
+    fit_ys = np.exp(fit_ys_log)
+
+    # Create a data frame with the original time values as index, and the
+    # values from the fit as a series named `expfit`
+    df_fit = df.copy()
+    df_fit["expfit"] = fit_ys
+    return df_fit
 
 
 def jhu_csse_csv_to_dataframe(data_file_path, location_name):
