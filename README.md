@@ -1,25 +1,35 @@
 # covid-19-analysis
 
-A tiny analysis toolkit based on the COVID-19 infeaction data published in the
-[CSSEGISandData/COVID-19](https://github.com/CSSEGISandData/COVID-19).
+A tiny analysis toolkit based on the COVID-19 infection data published in the
+[CSSEGISandData/COVID-19](https://github.com/CSSEGISandData/COVID-19)
+repository.
 
-This pipeline looks at the _confirmed infection count_.
+This pipeline looks at the _confirmed infection count_, as it evolves over time
+for individual countries.
 
-### How to use this
+### Usage
 
 1. Set up a Python environment with dependencies.
 
-2. Fetch or update raw data (from the `CSSEGISandData/COVID-19` repository):
+2. Fetch or update raw data:
 
    ```
    $ make fetch-data
    ```
 
-3. Invoke the analysis for a specific location, for example:
+3. Generate plots for a specific location, for example:
 
    ```
    $ make plot-germany
    ```
+
+This will generate `plot-germany.html` and try to automatically open it. That
+HTML document contains plots generated with
+[Bokeh](https://docs.bokeh.org/en/latest/index.html). These plots responsively
+adapt to the browser window width.
+
+Example screenshot:
+![covid-19-analysis example screenshot](https://raw.githubusercontent.com/jgehrcke/covid-19-analysis/master/screenshot.png "covid-19-analysis")
 
 ### Notes
 
