@@ -37,7 +37,7 @@ import pandas as pd
 import requests
 
 from bokeh.plotting import figure, output_file, show
-from bokeh.layouts import column
+from bokeh.layouts import column, layout
 from bokeh.models import ColumnDataSource, Div
 
 
@@ -54,11 +54,27 @@ def main():
     location_name = sys.argv[2]
 
     df = jhu_csse_csv_to_dataframe(data_file_path, location_name)
-    df = germany_try_to_get_todays_value_from_zeit_de(df)
-    create_bokeh_html(df, location_name)
+    df, modified = germany_try_to_get_todays_value_from_zeit_de(df)
+
+    zeit_de_source = 'and <a href="https://zeit.de">zeit.de</a>' if modified else ""
+
+    preamble_text = f"""
+    Analysis based on confirmed COVID-19 cases for {location_name}.
+
+    Data source: <a href="https://github.com/CSSEGISandData/COVID-19">github.com/CSSEGISandData/COVID-19</a> {zeit_de_source}
+
+    Author: <a href="https://gehrcke.de">Dr. Jan-Philip Gehrcke</a>
+
+    Code: <a href="https://github.com/jgehrcke/covid-19-analysis">github.com/jgehrcke/covid19</a>
+
+    Data points from before February 28 are ignored.
+    """
+
+    preamble_text = dedent(preamble_text.replace("\n\n", "<br />"))
+    create_bokeh_html(df, location_name, preamble_text)
 
 
-def create_bokeh_html(df, location_name):
+def create_bokeh_html(df, location_name, preamble_text):
 
     # upper-case for display purposes
     location_name = location_name.upper()
@@ -68,21 +84,7 @@ def create_bokeh_html(df, location_name):
 
     output_file(f"plot-{loc}.html")
 
-    preamble_text = f"""
-    Analysis based on confirmed COVID-19 cases for {location_name}.
-
-    Data source: <a href="https://github.com/CSSEGISandData/COVID-19">github.com/CSSEGISandData/COVID-19</a>
-
-    Author: <a href="https://gehrcke.de">Dr. Jan-Philip Gehrcke</a>
-
-    Code: <a href="https://github.com/jgehrcke/covid-19-analysis">github.com/jgehrcke/covid19</a>
-
-    Data points from before February 28 are ignored.
-    """
-
-    preamble = Div(
-        text=dedent(preamble_text.replace("\n\n", "<br />")), width=600, height=120,
-    )
+    preamble = Div(text=preamble_text, height=120)
 
     cases_total = df
 
@@ -103,8 +105,6 @@ def create_bokeh_html(df, location_name):
         title="evolution of total case count",
         x_axis_type="datetime",
         y_axis_type="log",
-        plot_width=1000,
-        plot_height=450,
         toolbar_location=None,
     )
     f1.scatter(
@@ -125,8 +125,6 @@ def create_bokeh_html(df, location_name):
         title="evolution of newly confirmed cases per day",
         x_axis_type="datetime",
         y_axis_type="log",
-        plot_width=1000,
-        plot_height=450,
         toolbar_location=None,
     )
 
@@ -144,7 +142,9 @@ def create_bokeh_html(df, location_name):
     f2.yaxis.axis_label = "newly registered cases, per day"
     f2.xaxis.ticker.desired_num_ticks = 15
 
-    show(column(preamble, f1, f2), browser="firefox")
+    show(
+        column(preamble, f1, f2, sizing_mode="stretch_both"), browser="firefox",
+    )
 
 
 def jhu_csse_csv_to_dataframe(data_file_path, location_name):
@@ -214,7 +214,7 @@ def germany_try_to_get_todays_value_from_zeit_de(df):
 
     except Exception as exc:
         log.warning("bail out: %s", str(exc))
-        return df
+        return df, False
 
     pd_today = pd.to_datetime(today, format="%Y-%m-%d")
 
@@ -231,12 +231,14 @@ def germany_try_to_get_todays_value_from_zeit_de(df):
                         log.info("sample from zeit.de for today: %s", sample["count"])
                         zeit_count_today = sample["count"]
 
+    modified = False
     if zeit_count_today:
         log.info("use that data point")
         df = df.append(pd.DataFrame({"germany": [sample["count"]]}, index=[pd_today]))
         df.index.name = "date"
+        modified = True
 
-    return df
+    return df, modified
 
 
 if __name__ == "__main__":
