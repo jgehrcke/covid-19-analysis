@@ -23,17 +23,18 @@ for individual countries.
    $ make plot-germany
    ```
 
-This will generate `plot-germany.html` and try to automatically open it. That
-HTML document contains plots generated with
-[Bokeh](https://docs.bokeh.org/en/latest/index.html). These plots responsively
-adapt to the browser window width.
+This will generate `plot-germany.html` and try to automatically open it.
+`make plot-italy` etc work correspondingly.
 
-Example screenshot:
-![covid-19-analysis example screenshot](https://raw.githubusercontent.com/jgehrcke/covid-19-analysis/master/screenshot.png "covid-19-analysis")
-
-### Notes
-
-`make plot-germany` attempts to fetch today's current confirmed infection count
+**Note**: `make plot-germany` attempts to fetch today's current confirmed infection count
 from [zeit.de](https://www.zeit.de/) (at the time of writing this the official
 numbers from German authorities lack behind, and zeit.de seems to do a decent
 job at getting current numbers from individual federal ministries.)
+
+### Example screenshot
+
+The HTML document contains plots generated with
+[Bokeh](https://docs.bokeh.org/en/latest/index.html). The figures responsively
+adapt to the browser window width.
+
+![covid-19-analysis example screenshot](https://raw.githubusercontent.com/jgehrcke/covid-19-analysis/master/screenshot.png "covid-19-analysis")
