@@ -116,7 +116,7 @@ def create_bokeh_html(df, location_name, preamble_text):
     # print(daily_cases_new)
 
     f1 = figure(
-        title="evolution of total case count",
+        title="evolution of total case count (half-logarithmic)",
         x_axis_type="datetime",
         y_axis_type="log",
         toolbar_location=None,
@@ -134,7 +134,7 @@ def create_bokeh_html(df, location_name, preamble_text):
     f1.y_range.start = 1
     f1.y_range.end = cases_total[loc].max() * 10
     f1.xaxis.axis_label = "Date"
-    f1.yaxis.axis_label = "number of confirmed cases"
+    f1.yaxis.axis_label = "total number of confirmed cases"
     f1.xaxis.ticker.desired_num_ticks = 15
     f1.outline_line_width = 4
     f1.outline_line_alpha = 0.3
@@ -207,7 +207,8 @@ def create_bokeh_html(df, location_name, preamble_text):
     f2.outline_line_color = "#aec6cf"
 
     show(
-        column(preamble, f1, f2, sizing_mode="stretch_both"), browser="firefox",
+        column(preamble, f1, flin, f2, sizing_mode="stretch_both", max_width=700),
+        browser="firefox",
     )
 
 
