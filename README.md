@@ -7,7 +7,13 @@ repository.
 This pipeline looks at the _confirmed infection count_, as it evolves over time
 for individual countries.
 
+To date the purpose of this is to see
+
 Prerequisite is a Python 3.6 environment with dependencies installed (`pip install -r requirements.txt`).
+
+### Demo
+
+[gehrcke.de/covid19/plot-germany.html](https://gehrcke.de/covid19/plot-germany.html)
 
 ### Usage
 
