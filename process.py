@@ -149,6 +149,37 @@ def create_bokeh_html(df, location_name, preamble_text):
     # f1.legend.title = "Legend"
     f1.legend.location = "top_left"
 
+    flin = figure(
+        title="evolution of total case count (linear)",
+        x_axis_type="datetime",
+        toolbar_location=None,
+        background_fill_color="#F2F2F7",
+    )
+    flin.scatter(
+        "date",
+        loc,
+        marker="x",
+        size=8,
+        line_width=3,
+        legend_label="raw data",
+        source=ColumnDataSource(data=cases_total),
+    )
+    flin.y_range.start = 1
+    flin.y_range.end = cases_total[loc].max() * 1.3
+    flin.xaxis.axis_label = "Date"
+    flin.yaxis.axis_label = "total number of confirmed cases"
+    flin.xaxis.ticker.desired_num_ticks = 15
+    flin.outline_line_width = 4
+    flin.outline_line_alpha = 0.3
+    flin.outline_line_color = "#aec6cf"
+    flin.line(
+        "date",
+        "expfit",
+        legend_label="exponential fit",
+        source=ColumnDataSource(data=cases_total_fit),
+    )
+    flin.legend.location = "top_left"
+
     f2 = figure(
         title="evolution of newly confirmed cases per day",
         x_axis_type="datetime",
