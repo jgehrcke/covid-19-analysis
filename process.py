@@ -40,7 +40,7 @@ import requests
 
 from bokeh.plotting import figure, output_file, show
 from bokeh.layouts import column, layout
-from bokeh.models import ColumnDataSource, Div
+from bokeh.models import ColumnDataSource, Div, HoverTool
 
 
 log = logging.getLogger()
@@ -106,14 +106,7 @@ def create_bokeh_html(df, location_name, preamble_text):
 
     cases_total_fit = expfit(cases_total, loc)
 
-    # cases_new_fit['expfit'] =
-
-    # sys.exit()
-
-    # ticker = DatetimeTickFormatter(interval=5, num_minor_ticks=10)
-    # xaxis = DatetimeAxis(ticker=ticker)
-
-    # print(daily_cases_new)
+    # hovertool = HoverTool(mode="vline",)
 
     f1 = figure(
         title="evolution of total case count (half-logarithmic)",
@@ -131,6 +124,13 @@ def create_bokeh_html(df, location_name, preamble_text):
         legend_label="raw data",
         source=ColumnDataSource(data=cases_total),
     )
+
+    f1.toolbar.active_drag = None
+    f1.toolbar.active_scroll = None
+    f1.toolbar.active_tap = None
+    f1.toolbar.active_inspect = [hovertool]
+
+    f1.y_range.bounds = (1, cases_total[loc].max() * 10)
     f1.y_range.start = 1
     f1.y_range.end = cases_total[loc].max() * 10
     f1.xaxis.axis_label = "Date"
@@ -164,6 +164,10 @@ def create_bokeh_html(df, location_name, preamble_text):
         legend_label="raw data",
         source=ColumnDataSource(data=cases_total),
     )
+
+    flin.toolbar.active_drag = None
+    flin.toolbar.active_scroll = None
+    flin.toolbar.active_tap = None
     flin.y_range.start = 1
     flin.y_range.end = cases_total[loc].max() * 1.3
     flin.xaxis.axis_label = "Date"
@@ -196,6 +200,9 @@ def create_bokeh_html(df, location_name, preamble_text):
         source=ColumnDataSource(data=cases_new),
     )
 
+    f2.toolbar.active_drag = None
+    f2.toolbar.active_scroll = None
+    f2.toolbar.active_tap = None
     f2.y_range.start = 1
     f2.y_range.end = cases_new["diff"].max() * 10
     f2.xaxis.axis_label = "Date"
