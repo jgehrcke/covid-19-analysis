@@ -1,4 +1,8 @@
-# covid-19-analysis
+## Demo
+
+[gehrcke.de/covid19/plot-germany.html](https://gehrcke.de/covid19/plot-germany.html)
+
+## Overview
 
 A tiny analysis toolkit based on the COVID-19 infection data published in the
 [CSSEGISandData/COVID-19](https://github.com/CSSEGISandData/COVID-19)
@@ -7,15 +11,12 @@ repository.
 This pipeline looks at the _confirmed infection count_, as it evolves over time
 for individual countries.
 
-To date the purpose of this is to see
+To date the main purpose of this is to see whether the number of confirmed
+cases in this current stage of development follows an exponential curve or not.
 
 Prerequisite is a Python 3.6 environment with dependencies installed (`pip install -r requirements.txt`).
 
-### Demo
-
-[gehrcke.de/covid19/plot-germany.html](https://gehrcke.de/covid19/plot-germany.html)
-
-### Usage
+## Usage
 
 1. Fetch raw data (can also be used to subsequently update the data):
 
@@ -52,11 +53,3 @@ python process.py  _current.csv charleston
 200316-19:02:40.473 INFO: candidate by similarity: us_charleston_county_sc (similarity 0.61)
 ...
 ```
-
-### Example screenshot
-
-The HTML document contains plots generated with
-[Bokeh](https://docs.bokeh.org/en/latest/index.html). The figures responsively
-adapt to the browser window width.
-
-![covid-19-analysis example screenshot](https://raw.githubusercontent.com/jgehrcke/covid-19-analysis/master/screenshot.png "covid-19-analysis")
