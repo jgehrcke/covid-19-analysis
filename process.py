@@ -40,7 +40,7 @@ import requests
 
 from bokeh.plotting import figure, output_file, show
 from bokeh.layouts import column, layout
-from bokeh.models import ColumnDataSource, Div, HoverTool
+from bokeh.models import ColumnDataSource, Div
 
 
 log = logging.getLogger()
@@ -106,8 +106,6 @@ def create_bokeh_html(df, location_name, preamble_text):
 
     cases_total_fit = expfit(cases_total, loc)
 
-    # hovertool = HoverTool(mode="vline",)
-
     f1 = figure(
         title="evolution of total case count (half-logarithmic)",
         x_axis_type="datetime",
@@ -128,7 +126,6 @@ def create_bokeh_html(df, location_name, preamble_text):
     f1.toolbar.active_drag = None
     f1.toolbar.active_scroll = None
     f1.toolbar.active_tap = None
-    f1.toolbar.active_inspect = [hovertool]
 
     f1.y_range.bounds = (1, cases_total[loc].max() * 10)
     f1.y_range.start = 1
