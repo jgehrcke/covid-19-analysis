@@ -13,6 +13,8 @@ for individual countries.
 
 To date the main purpose of this is to see whether the number of confirmed
 cases in this current stage of development follows an exponential curve or not.
+To that end, this tool plots the time evolution half-logarithmically and
+performs an exponential fit.
 
 Prerequisite is a Python 3.6 environment with dependencies installed (`pip install -r requirements.txt`).
 
