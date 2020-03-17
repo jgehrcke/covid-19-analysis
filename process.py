@@ -214,7 +214,7 @@ def create_bokeh_html(df, location_name, preamble_text):
     f2.outline_line_color = "#aec6cf"
 
     show(
-        column(preamble, f1, flin, f2, sizing_mode="stretch_both", max_width=700),
+        column(preamble, f1, flin, f2, sizing_mode="stretch_both", max_width=900),
         browser="firefox",
     )
 
