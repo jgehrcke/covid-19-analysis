@@ -62,6 +62,8 @@ def main():
 
     modified = False
     if loc == "germany":
+        # correct manually for https://github.com/CSSEGISandData/COVID-19/issues/804
+        df["germany"]["2020-03-12"] = 2369
         df, modified = germany_try_to_get_todays_value_from_zeit_de(df)
 
     now = datetime.utcnow()
