@@ -76,6 +76,8 @@ def main():
     Data points from before February 28 are ignored.
 
     Generated at {now .strftime('%Y-%m-%d %H:%M UTC')}
+
+    Current count: {df[loc][-1]} ({df.index[-1].strftime("%Y-%m-%d")})
     """
 
     preamble_text = dedent(preamble_text.replace("\n\n", "<br />"))
