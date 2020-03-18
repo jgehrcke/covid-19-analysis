@@ -57,8 +57,11 @@ def main():
 
     df = jhu_csse_csv_to_dataframe(data_file_path, location_name)
 
+    # lower-case for lookup in DataFrame, and for filename generation.
+    loc = location_name.lower()
+
     modified = False
-    if location_name.lower() == "germany":
+    if loc == "germany":
         df, modified = germany_try_to_get_todays_value_from_zeit_de(df)
 
     now = datetime.utcnow()
@@ -84,13 +87,7 @@ def main():
     create_bokeh_html(df, location_name, preamble_text)
 
 
-def create_bokeh_html(df, location_name, preamble_text):
-
-    # upper-case for display purposes
-    location_name = location_name.upper()
-
-    # lower-case for lookup in DataFrame, and for filename generation.
-    loc = location_name.lower()
+def create_bokeh_html(df, loc, preamble_text):
 
     output_file(f"plot-{loc}.html")
 
